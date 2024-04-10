@@ -114,14 +114,22 @@ class DatasetPreprocessor(Preprocessor):
 
 class AmazonDatasetPreprocessor(DatasetPreprocessor):
     def preprocess_data(self, df):
-        df['reviewText'] = df['reviewText'].astype(str).apply(self.preprocess_text)
+        df['Text'] = df['reviewText'].astype(str).apply(self.preprocess_text)
         return df
 
 class KaggleDatasetPreprocessor(DatasetPreprocessor):
     def preprocess_data(self, df):
-        df['text'] = df['text'].astype(str).apply(self.preprocess_text)
+        df['Text'] = df['text'].astype(str).apply(self.preprocess_text)
         return df
 
 class SentenceDatasetPreprocessor(DatasetPreprocessor):
     def preprocess_data(self, df):
-        return df.apply(lambda x: self.preprocess_text(x['sentence']), axis=1)
+        # Preprocess the sentences
+        df['Text'] = df['sentence'].astype(str).self.preprocess_text)
+        
+        # Drop the original 'sentence' column as it's no longer needed
+        df.drop('sentence', axis=1, inplace=True)
+
+        df.rename(columns={'sentiment': 'score'}, inplace=True)
+
+        return df
