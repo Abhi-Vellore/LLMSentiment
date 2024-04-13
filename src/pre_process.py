@@ -90,11 +90,9 @@ class DatasetPreprocessor(Preprocessor):
             df = self._read_txt()
         else:
             raise ValueError("Unsupported file type")
-        
+            
         self.df = self.preprocess_df(df)
         return self.df
-
-        return self.preprocess_df(df)
 
     def preprocess_df(self, df):
         if hasattr(self, 'preprocess_data'):
@@ -125,8 +123,8 @@ class KaggleDatasetPreprocessor(DatasetPreprocessor):
 class SentenceDatasetPreprocessor(DatasetPreprocessor):
     def preprocess_data(self, df):
         # Preprocess the sentences
-        df['Text'] = df['sentence'].astype(str).self.preprocess_text)
-        
+        df['Text'] = df['sentence'].astype(str).apply(self.preprocess_text)
+
         # Drop the original 'sentence' column as it's no longer needed
         df.drop('sentence', axis=1, inplace=True)
 

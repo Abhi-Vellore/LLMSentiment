@@ -5,3 +5,10 @@ scikit-learn
 sqlalchemy
 nltk
 requests
+transformers
+accelerate
+pypdf 
+sentence-transformers
+chromadb
+langchain
+openai

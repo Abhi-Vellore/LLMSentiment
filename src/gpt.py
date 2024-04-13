@@ -3,13 +3,15 @@ import requests
 
 
 class ChatGPTSession:
-    def __init__(self, api_key, model):
+    def __init__(self, api_key, model, rate_limit_per_minute):
         self.api_key = api_key
         self.model = model
         self.headers = {
             'Authorization': f'Bearer {self.api_key}'
         }
         self.context_set = False
+        self.rate_limit_per_minute = rate_limit_per_minute
+        self.last_request_time = None
 
     def set_context(self, context):
         self.context = context
