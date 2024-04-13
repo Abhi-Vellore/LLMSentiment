@@ -5,6 +5,7 @@ from nltk.tokenize import word_tokenize
 import nltk
 import os
 import json
+import random
 from config import DATA_PATH, PROCESSED_DATA_PATH
 
 
@@ -113,11 +114,13 @@ class DatasetPreprocessor(Preprocessor):
 class AmazonDatasetPreprocessor(DatasetPreprocessor):
     def preprocess_data(self, df):
         df['Text'] = df['reviewText'].astype(str).apply(self.preprocess_text)
+        df.rename(columns = {'overall':'labeled_score'}, inplace = True) 
         return df
 
 class KaggleDatasetPreprocessor(DatasetPreprocessor):
     def preprocess_data(self, df):
         df['Text'] = df['text'].astype(str).apply(self.preprocess_text)
+        df['Actual_Score'] = df['sentiment'].apply(lambda x: random.choice([1, 2]) if x == 'negative' else (3 if x == 'neutral' else random.choice([4, 5])))
         return df
 
 class SentenceDatasetPreprocessor(DatasetPreprocessor):
@@ -129,5 +132,9 @@ class SentenceDatasetPreprocessor(DatasetPreprocessor):
         df.drop('sentence', axis=1, inplace=True)
 
         df.rename(columns={'sentiment': 'score'}, inplace=True)
+
+        df['Actual_Score'] = df['score'].apply(lambda x: random.choice([1, 2]) if x == 'negative' else (3 if x == 'neutral' else random.choice([4, 5])))
+
+        return df
 
         return df
