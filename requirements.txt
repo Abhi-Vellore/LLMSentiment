@@ -1,11 +1,9 @@
 pandas
 numpy
-spacy
+matplotlib
 scikit-learn
 sqlalchemy
 nltk
 requests
-transformers
-accelerate
-langchain
 openai
+seaborn
