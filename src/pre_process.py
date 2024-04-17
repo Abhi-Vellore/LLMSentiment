@@ -114,7 +114,7 @@ class DatasetPreprocessor(Preprocessor):
 class AmazonDatasetPreprocessor(DatasetPreprocessor):
     def preprocess_data(self, df):
         df['Text'] = df['reviewText'].astype(str).apply(self.preprocess_text)
-        df.rename(columns = {'overall':'labeled_score'}, inplace = True) 
+        df.rename(columns = {'overall':'Actual_Score'}, inplace = True) 
         return df
 
 class KaggleDatasetPreprocessor(DatasetPreprocessor):
