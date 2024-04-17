@@ -38,6 +38,17 @@ class ChatGPTSession:
         response_data = response.json()
         
 
+        # Check for 'choices' in the response and if it's not empty
+        if 'choices' not in response_data or not response_data['choices']:
+            print("No 'choices' found in response or 'choices' is empty.")
+            return None
+
+        # Check if 'message' and 'content' keys are in the response
+        if 'message' not in response_data['choices'][0] or 'content' not in response_data['choices'][0]['message']:
+            print("No 'message' or 'content' in 'choices' found in response.")
+            return None
+
+
         # Assuming the API response contains a number as a sentiment score
         score = response_data['choices'][0]['message']['content']
         
