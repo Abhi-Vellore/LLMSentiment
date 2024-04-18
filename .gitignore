@@ -4,3 +4,5 @@ __pycache__/
 .DS_Store
 *.sqlite
 credentials.py
+src/codellama/
+src/llama.cpp/

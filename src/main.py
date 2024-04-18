@@ -1,40 +1,32 @@
-from pre_process import AmazonDatasetPreprocessor, KaggleDatasetPreprocessor, SentenceDatasetPreprocessor
-from config import PROCESSED_DATA_PATH
-import os
 import pandas as pd
-
+from llama2 import load_model, initialize_langchain, analyze_sentiments
 
 def main():
-   # Initialize and process the Amazon data
-   amazon_processor = AmazonDatasetPreprocessor('Amazon_Fashion_Review_Data.json')
-   amazon_processor.preprocess()
-   amazon_processor.to_csv('processed_amazon_data.csv')
-
-   # Initialize and process the Sentence data
-   sentence_processor = SentenceDatasetPreprocessor('Sentences_75Agree.txt')
-   sentence_processor.preprocess()
-   sentence_processor.to_csv('processed_sentence_data.csv')
-
-   # Initialize and process the first Kaggle dataset
-   kaggle1_processor = KaggleDatasetPreprocessor('kaggle_train.csv')
-   kaggle1_processor.preprocess()
-   kaggle1_processor.to_csv('processed_kaggle_train_data.csv')
-
-   # Initialize and process the second Kaggle dataset
-   kaggle2_processor = KaggleDatasetPreprocessor('kaggle_test.csv')
-   kaggle2_processor.preprocess()
-   kaggle2_processor.to_csv('processed_kaggle_test_data.csv')
-
-   # Concatenate the preprocessed DataFrames
-   processed_kaggle1_df = kaggle1_processor.df
-   processed_kaggle2_df = kaggle2_processor.df
-   combined_df = pd.concat([processed_kaggle1_df, processed_kaggle2_df], ignore_index=True)
-
-   # Save the combined DataFrame to a new CSV file in the processed directory
-   # Since combined_df is not associated with a processor, we need to handle the path manually
-   combined_csv_path = os.path.join(PROCESSED_DATA_PATH, 'processed_kaggle_combined_data.csv')
-   combined_df.to_csv(combined_csv_path, index=False)
-   print(f"Processed combined Kaggle data saved to {combined_csv_path}")
+    # Define the model path and data path
+    model_path = "codellama/llama"
+    data_path = "test_experiment.csv"
+    
+    # Load the model
+    llama_model = load_model(model_path)
+    
+    # Initialize the langchain with the sentiment analysis template
+    template = "As a sentiment analysis model, rate the sentiment of the following text from 1 to 5, where 1 is very negative and 5 is very positive. Provide only the number as a response."
+    input_variables = {'text': 'string'}  # Define the input variable type
+    llm_chain = initialize_langchain(llama_model, template, input_variables)
+    
+    # Load the data
+    data = pd.read_csv(data_path)
+    
+    # Perform sentiment analysis
+    analyzed_data = analyze_sentiments(data, llm_chain)
+    
+    # Output results, for example, save to a new CSV
+    output_path = "path_to_your_output.csv"
+    analyzed_data.to_csv(output_path, index=False)
+    print(f"Sentiment analysis complete. Results saved to {output_path}")
 
 if __name__ == "__main__":
-   main()
+    main()
+
+
+

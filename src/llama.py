@@ -1,6 +1,7 @@
 import pandas as pd
 import openai
 import time
+import re
 
 class LLaMaSession:
     def __init__(self, api_key, model, rate_limit_per_minute):
@@ -28,14 +29,28 @@ class LLaMaSession:
             ]
         )
         
-        # Process the response
-        sentiment_score = response.choices[0].message.content
-        try:
-            # Extract the first number in the response, which is assumed to be the sentiment score
-            sentiment_score = int(sentiment_score.strip())
-        except ValueError:
-            # Handle cases where conversion to int fails
-            print(f"Could not convert response to int: '{sentiment_score}'")
+        # Check for 'choices' in the response and if it's not empty
+        if 'choices' not in response or not response['choices']:
+            print("No 'choices' found in response or 'choices' is empty.")
+            return None
+
+        # Check if 'message' and 'content' keys are in the response
+        if 'message' not in response['choices'][0] or 'content' not in response['choices'][0]['message']:
+            print("No 'message' or 'content' in 'choices' found in response.")
+            return None
+
+        # Use regular expression to find the first number in the response text
+        match = re.search(r'\d+', response)
+        if match:
+            try:
+                # Convert the found number to an integer
+                sentiment_score = int(match.group())
+            except ValueError:
+                print(f"Could not convert found number to int: '{match.group()}'")
+                sentiment_score = None
+        else:
+            print("No number found in the response text.")
             sentiment_score = None
+
         
         return sentiment_score
