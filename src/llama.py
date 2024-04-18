@@ -18,39 +18,50 @@ class LLaMaSession:
             time_to_wait = (60 / self.rate_limit_per_minute) - time_since_last_request
             if time_to_wait > 0:
                 time.sleep(time_to_wait)
-        
-        self.last_request_time = time.time()
-        
-        response = self.client.chat.completions.create(
-            model=self.model,
-            messages=[
-                {"role": "system", "content": "As a sentiment analysis model, rate the sentiment of the following text from 1 to 5, where 1 is very negative and 5 is very positive. Provide only the number as a response."},
-                {"role": "user", "content": text}
-            ]
-        )
-        
-        # Check for 'choices' in the response and if it's not empty
-        if 'choices' not in response or not response['choices']:
-            print("No 'choices' found in response or 'choices' is empty.")
+
+        try:
+            completion = self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": "As a sentiment analysis model, rate the sentiment of the following text from 1 to 5, where 1 is very negative and 5 is very positive. Provide only the number as a response."},
+                    {"role": "user", "content": text}
+                ]
+            )
+            # Access the relevant part of the response
+            response_text = completion.choices[0].message.content
+            match = re.search(r'\d+', response_text)
+            if match:
+                return int(match.group())
+            else:
+                print(f"No numeric response found in API response: {response_text}")
+                return None
+        except Exception as e:
+            print(f"Error processing API response: {e}")
             return None
 
-        # Check if 'message' and 'content' keys are in the response
-        if 'message' not in response['choices'][0] or 'content' not in response['choices'][0]['message']:
-            print("No 'message' or 'content' in 'choices' found in response.")
-            return None
+        
+        # # Check for 'choices' in the response and if it's not empty
+        # if 'choices' not in response or not response['choices']:
+        #     print("No 'choices' found in response or 'choices' is empty.")
+        #     return None
 
-        # Use regular expression to find the first number in the response text
-        match = re.search(r'\d+', response)
-        if match:
-            try:
-                # Convert the found number to an integer
-                sentiment_score = int(match.group())
-            except ValueError:
-                print(f"Could not convert found number to int: '{match.group()}'")
-                sentiment_score = None
-        else:
-            print("No number found in the response text.")
-            sentiment_score = None
+        # # Check if 'message' and 'content' keys are in the response
+        # if 'message' not in response['choices'][0] or 'content' not in response['choices'][0]['message']:
+        #     print("No 'message' or 'content' in 'choices' found in response.")
+        #     return None
+
+        # # Use regular expression to find the first number in the response text
+        # match = re.search(r'\d+', response)
+        # if match:
+        #     try:
+        #         # Convert the found number to an integer
+        #         sentiment_score = int(match.group())
+        #     except ValueError:
+        #         print(f"Could not convert found number to int: '{match.group()}'")
+        #         sentiment_score = None
+        # else:
+        #     print("No number found in the response text.")
+        #     sentiment_score = None
 
         
         return sentiment_score

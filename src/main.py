@@ -3,7 +3,7 @@ from llama2 import load_model, initialize_langchain, analyze_sentiments
 
 def main():
     # Define the model path and data path
-    model_path = "codellama/llama"
+    model_path = "llama-2-7b-chat.Q4_K_M.gguf"
     data_path = "test_experiment.csv"
     
     # Load the model
