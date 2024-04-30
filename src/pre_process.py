@@ -20,6 +20,8 @@ emoticons = {
 }
 
 class Preprocessor:
+    """Handles preprocessing of all datasets with a modular approach."""
+    
     def __init__(self):
         self.stop_words = set(stopwords.words('english'))
 

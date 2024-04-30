@@ -5,6 +5,8 @@ import time
 import re
 
 class LLaMaSession:
+    """Handles sessions with the LlaMA API including setting system content and sending prompts."""
+
     def __init__(self, api_key, model, rate_limit_per_minute):
         self.api_key = api_key
         self.model = model
