@@ -1,4 +1,5 @@
-import re
+# src/pre_process.py
+
 import pandas as pd
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
@@ -8,9 +9,11 @@ import json
 import random
 from config import DATA_PATH, PROCESSED_DATA_PATH
 
+# Predefine necessary downloads for nltk to prevent repetitive downloads
+nltk.download('punkt', quiet=True)
+nltk.download('stopwords', quiet=True)
 
-
-# Define a simple emoticon dictionary
+# Define an emoticon dictionary
 emoticons = {
     ':)': ' smiley ',
     ':(': ' sad ',
@@ -18,9 +21,6 @@ emoticons = {
 
 class Preprocessor:
     def __init__(self):
-        nltk.download('punkt', quiet=True)
-        nltk.download('stopwords', quiet=True)
-        
         self.stop_words = set(stopwords.words('english'))
 
     def remove_stop_words(self, text):
@@ -54,6 +54,7 @@ class DatasetPreprocessor(Preprocessor):
             return 'txt'
         else:
             raise ValueError("Unsupported file type")
+
 
     def _read_json(self):
         with open(self.file_path, 'r', encoding='utf-8') as file:
@@ -106,7 +107,6 @@ class DatasetPreprocessor(Preprocessor):
         if not os.path.exists(PROCESSED_DATA_PATH):
             os.makedirs(PROCESSED_DATA_PATH)
 
-        # Join the processed directory path with the output file name
         output_file_path = os.path.join(PROCESSED_DATA_PATH, output_file_path)
         self.df.to_csv(output_file_path, index=False)
         print(f"Processed data saved to {output_file_path}")
@@ -125,16 +125,8 @@ class KaggleDatasetPreprocessor(DatasetPreprocessor):
 
 class SentenceDatasetPreprocessor(DatasetPreprocessor):
     def preprocess_data(self, df):
-        # Preprocess the sentences
         df['Text'] = df['sentence'].astype(str).apply(self.preprocess_text)
-
-        # Drop the original 'sentence' column as it's no longer needed
         df.drop('sentence', axis=1, inplace=True)
-
         df.rename(columns={'sentiment': 'score'}, inplace=True)
-
         df['Actual_Score'] = df['score'].apply(lambda x: random.choice([1, 2]) if x == 'negative' else (3 if x == 'neutral' else random.choice([4, 5])))
-
-        return df
-
         return df

@@ -1,8 +1,12 @@
+# src/gpt.py
+
 import pandas as pd
 import requests
 
 
 class ChatGPTSession:
+    """Handles sessions with the ChatGPT API including setting context and sending prompts."""
+
     def __init__(self, api_key, model, rate_limit_per_minute):
         self.api_key = api_key
         self.model = model
@@ -14,10 +18,12 @@ class ChatGPTSession:
         self.last_request_time = None
 
     def set_context(self, context):
+        """Set the context for the conversation."""
         self.context = context
         self.context_set = True
 
     def send_prompt(self, prompt):
+        """Send a prompt to the ChatGPT API and return the processed sentiment score."""
         if not self.context_set:
             raise ValueError("Context not set. Call set_context before sending prompts.")
         
@@ -27,9 +33,9 @@ class ChatGPTSession:
         data = {
             'model': self.model,
             'messages': messages,
-            'max_tokens': 10,
-            'temperature': 1,
-            'top_p': 0.1,
+            'max_tokens': 10, # limit result length
+            'temperature': 1, # default settings
+            'top_p': 0.1, # limits number of possible correct responses
             'frequency_penalty': 0,
             'presence_penalty': 0,
         }
